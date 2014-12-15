@@ -1,10 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "list.h"
+#include "test.h"
+
+void sunburFreeNodeVal(void *ptr)
+{
+  free(ptr);
+}
 
 int main(void)
 {
   sunburList *list = sunburListCreate();
+  sunburFreeNodeValPtr = &sunburFreeNodeVal;
+  list->free = sunburFreeNodeVal;
   struct kv {
     char *key;
     int val;
@@ -25,8 +33,6 @@ int main(void)
   printf("%s -> %d\n", ((struct kv *)xnode->val)->key, ((struct kv *)xnode->val)->val);
   xnode = sunburListNextNode(iter);
   printf("%s -> %d\n", ((struct kv *)xnode->val)->key, ((struct kv *)xnode->val)->val);
-  free(i1);
-  free(i2);
   sunburListRealseIterator(iter);
   sunburListRelease(list);
 }
