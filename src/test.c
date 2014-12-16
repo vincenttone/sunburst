@@ -29,10 +29,11 @@ int main(void)
   sunburListAddNode(list, i2, sunburListDirectionForward);
   sunburListIter *iter = sunburListGetIterator(list, sunburListDirectionForward);
   sunburListNode *xnode;
-  xnode = sunburListNextNode(iter);
-  printf("%s -> %d\n", ((struct kv *)xnode->val)->key, ((struct kv *)xnode->val)->val);
-  xnode = sunburListNextNode(iter);
-  printf("%s -> %d\n", ((struct kv *)xnode->val)->key, ((struct kv *)xnode->val)->val);
+  do {
+    xnode = sunburListNextNode(iter);
+    if (xnode == NULL) break;
+    printf("%s -> %d\n", ((struct kv *)xnode->val)->key, ((struct kv *)xnode->val)->val);
+  } while (xnode);
   sunburListRealseIterator(iter);
   sunburListRelease(list);
 }
