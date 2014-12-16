@@ -18,11 +18,11 @@ int main(void)
     int val;
   };
   struct kv *i1;
-  i1 = malloc(sizeof(i1));
+  i1 = malloc(sizeof(struct kv));
   i1->key = "test1";
   i1->val = 100;
   struct kv *i2;
-  i2 = malloc(sizeof(i2));
+  i2 = malloc(sizeof(struct kv));
   i2->key = "test2";
   i2->val = 300;
   sunburListAddNode(list, i1, sunburListDirectionForward);

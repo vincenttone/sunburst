@@ -5,7 +5,7 @@
 sunburList *sunburListCreate(void)
 {
   sunburList *list;
-  list = malloc(sizeof(*list));
+  list = malloc(sizeof(sunburList));
   if (list == NULL) 
     return NULL;
   list->head = NULL;
@@ -37,7 +37,7 @@ void sunburListRelease(sunburList *list)
 sunburList *sunburListAddNode(sunburList *list, void *val, enum SunburListDirection direction)
 {
   sunburListNode  *node;
-  node = malloc(sizeof(node));
+  node = malloc(sizeof(sunburListNode));
   if (node == NULL)
     return NULL;
   node->val = val;
@@ -84,7 +84,7 @@ void sunburListDelNode(sunburList *list, sunburListNode *node)
 sunburListIter *sunburListGetIterator(sunburList *list, enum SunburListDirection direction)
 {
   sunburListIter *iterator;
-  iterator = malloc(sizeof(iterator));
+  iterator = malloc(sizeof(sunburListIter));
   if (iterator == NULL) {
     return NULL;
   }
