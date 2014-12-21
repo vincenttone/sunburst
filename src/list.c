@@ -1,10 +1,11 @@
 #include <stdlib.h>
+#include "vmem.h"
 #include "list.h"
 
 sunburList *sunburListCreate(void)
 {
   sunburList *list;
-  list = malloc(sizeof(sunburList));
+  list = vmalloc(sizeof(sunburList));
   if (list == NULL) 
     return NULL;
   list->head = NULL;
@@ -26,17 +27,17 @@ void sunburListRelease(sunburList *list)
     while (len--) {
       next = current->next;
       if (list->free) list->free(current->val);
-      if (current != NULL) free(current);
+      if (current != NULL) vfree(current);
       current = next;
     }
-    free(list);
+    vfree(list);
   }
 }
 
 sunburList *sunburListAddNode(sunburList *list, void *val, enum SunburListDirection direction)
 {
   sunburListNode  *node;
-  node = malloc(sizeof(sunburListNode));
+  node = vmalloc(sizeof(sunburListNode));
   if (node == NULL)
     return NULL;
   node->val = val;
@@ -77,13 +78,13 @@ void sunburListDelNode(sunburList *list, sunburListNode *node)
   if (list->free) {
     list->free(node->val);
   }
-  free(node);
+  vfree(node);
 }
 
 sunburListIter *sunburListGetIterator(sunburList *list, enum SunburListDirection direction)
 {
   sunburListIter *iterator;
-  iterator = malloc(sizeof(sunburListIter));
+  iterator = vmalloc(sizeof(sunburListIter));
   if (iterator == NULL) {
     return NULL;
   }
@@ -98,7 +99,7 @@ sunburListIter *sunburListGetIterator(sunburList *list, enum SunburListDirection
 
 void sunburListRealseIterator(sunburListIter *iterator)
 {
-  free(iterator);
+  vfree(iterator);
 }
 
 void sunburListRewind(sunburList *list, sunburListIter *iterator)

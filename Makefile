@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-g
 VPATH=src
-sources:=test.c list.c
+sources:=test.c list.c vmem.c
 objects:=$(sources:%.c=output/%.o)
 .PHONY: all output_dir
 all: output_dir $(objects)
