@@ -4,8 +4,8 @@ v_br_tree* init_tree()
 {
   v_br_tree *tree;
   tree = V_MALLC(sizeof(v_br_tree));
-  v_br_node *nil_node;
-  nil_node = V_MALLC(sizeof(v_br_node));
+  v_br_node *nil_node = NULL;
+  //nil_node = V_MALLC(sizeof(v_br_node));
   tree->root = nil_node;
   tree->NIL = nil_node;
   return tree;
@@ -95,11 +95,16 @@ static void function insert_fixup(v_br_tree *tree, v_br_node *node)
   tree->root = VT_BLACK;
 }
 /**
+ * left rorate brtree
+ *
  *    x               y
  *   / \             / \
  *  a   y           x   c
  *      / \        / \
  *     b   c      a   b
+ *
+ * @params v_br_tree *tree
+ * @params v_br_node *node
  **/
 static int left_rorate(v_br_tree *tree, v_br_node *node)
 {
@@ -130,11 +135,16 @@ static int left_rorate(v_br_tree *tree, v_br_node *node)
   return 0;
 }
 /**
+ * right rorate tree
+ *
  *     x           y
  *    / \         / \
  *   y   c       a   x
  *  / \             / \
  * a   b           b   c
+ *
+ * @params v_br_tree *tree
+ * @params v_br_node *node
  **/
 static int right_rorate(v_br_tree *tree, v_br_node *node)
 {
@@ -163,4 +173,30 @@ static int right_rorate(v_br_tree *tree, v_br_node *node)
   node->parent = replace2_node;
 
   return 0;
+}
+
+/**
+ * search the needle key node
+ * @params v_br_tree *tree
+ * @params long key
+ * @return v_br_node || NIL
+ *         success: v_br_node
+ *         failed: NIL
+ */
+v_br_node* searchNode(v_br_tree *tree, long key)
+{
+  v_br_node *current_node = tree->root;
+  while (
+         current_node != tree->NIL
+         && key != current_node->key
+         ) {
+    current_node = key < current_node->key
+      ? current_node->left
+      : current_node->right;
+  }
+  return current_node;
+}
+
+void delete_node(v_br_tree *tree, v_br_node *node)
+{
 }
