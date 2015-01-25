@@ -242,7 +242,7 @@ v_br_node* search_successor(v_br_tree *tree, v_br_node *node)
   }
   // right branch not exists
   // cond 1: node is left child, successor is parent;
-  // cond 2: node is right child, find up when match cond 1.
+  // cond 2: node is right child, find up until match cond 1.
   v_br_node *s_node = node->parent;
   while (s_node != tree->NIL && node == s_node->right) {
     node = s_node;
@@ -292,7 +292,7 @@ void delete_node(v_br_tree *tree, long key)
     delete_fixup(tree, del_node);
   }
   // delete the node
-  DELETE(rp_node); // TODO
+  V_FREE(rp_node);
 }
 
 static void delete_fixup(v_br_tree *tree, v_br_node *node)
