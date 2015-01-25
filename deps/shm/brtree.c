@@ -5,7 +5,6 @@ v_br_tree* init_tree()
   v_br_tree *tree;
   tree = V_MALLC(sizeof(v_br_tree));
   v_br_node *nil_node = NULL;
-  //nil_node = V_MALLC(sizeof(v_br_node));
   tree->root = nil_node;
   tree->NIL = nil_node;
   return tree;
@@ -183,7 +182,7 @@ static int right_rorate(v_br_tree *tree, v_br_node *node)
  *         success: v_br_node
  *         failed: NIL
  */
-v_br_node* searchNode(v_br_tree *tree, long key)
+v_br_node* search_node(v_br_tree *tree, long key)
 {
   v_br_node *current_node = tree->root;
   while (
@@ -196,7 +195,106 @@ v_br_node* searchNode(v_br_tree *tree, long key)
   }
   return current_node;
 }
+/**
+ * find min node in node's sub tree
+ * @params tree
+ * @params node
+ * @return min node
+ */
+v_br_node* search_min(v_br_tree *tree, v_br_node *node)
+{
+  if (node == tree->NIL) {
+    return tree->NIL;
+  }
+  while (node->left != tree->NIL) {
+    node = node->left;
+  }
+  return node;
+}
+/**
+ * find max node int node's sub tree
+ */
+v_br_node* search_max(v_br_tree *tree, v_br_node *node)
+{
+  if (node == tree->NIL) {
+    return tree->NIL;
+  }
+  while (node->right != tree->NIL) {
+    node = node->right;
+  }
+  return node;
+}
+/**
+ * find in order successor of the node in tree
+ * when find in order successor:
+ * print out the left node, then the right node
+ * just think of this, it should be easy
+ */
+v_br_node* search_successor(v_br_tree *tree, v_br_node *node)
+{
+  if (node == tree->NIL) {
+    return tree->NIL;
+  }
+  // has right branch
+  // find the min node in right branch
+  if (x->right != tree->NIL) {
+    return search_min(tree, x->right);
+  }
+  // right branch not exists
+  // cond 1: node is left child, successor is parent;
+  // cond 2: node is right child, find up when match cond 1.
+  v_br_node *s_node = node->parent;
+  while (s_node != tree->NIL && node == s_node->right) {
+    node = s_node;
+    s_node->node->parent;
+  }
+  return y;
+}
+/**
+ * delete node match the key int tree
+ */
+void delete_node(v_br_tree *tree, long key)
+{
+  v_br_node *del_node = search_node(tree, key);
+  if (del_node == tree->NIL) return;
+  // find the real position to del
+  // cond 1: only one child branch, del the node
+  // cond 2: two child branch, find the successor
+  v_br_node *rp_node = 
+    (del_node->left == tree->NIL
+     || del_node->right == tree->NIL)
+    ? del_node
+    : search_successor(tree, del_node);
+  v_br_node *rp_child_node = 
+    rp_node->left == tree->NIL
+    ? rp_node->right
+    : rp_node->left;
+  // adjust relations
+  if (rp_child_node != tree->NIL) {
+    rp_child_node->parent = rp_node->parent;
+  }
+  if (rp_node->parent == tree->NIL) {
+    // rp_node is root
+    tree->root = rp_child_node;
+  } else if (rp_node->parent->left == rp_node) {
+    // rp_node is left child
+    rp_node->parent->left = rp_child_node;
+  } else {
+    // rp_node is right child
+    rp_node->parent->right = rp_child_node;
+  }
+  // fix the key
+  if (del_node != rp_node) {
+    del_node->key = rp_node->key;
+  }
+  // if deleted node is black, need to fixup
+  if (rp_node->color == VT_BLACK) {
+    delete_fixup(tree, del_node);
+  }
+  // delete the node
+  DELETE(rp_node); // TODO
+}
 
-void delete_node(v_br_tree *tree, v_br_node *node)
+static void delete_fixup(v_br_tree *tree, v_br_node *node)
 {
 }

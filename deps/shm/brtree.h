@@ -23,5 +23,6 @@ typedef struct v_br_tree {
 
 v_br_tree* init_tree(v_br_tree *tree);
 void insert_node(v_br_tree *tree, long key);
+v_br_node* search_node(v_br_tree *tree, long key);
 
 #endif
