@@ -294,7 +294,53 @@ void delete_node(v_br_tree *tree, long key)
   // delete the node
   V_FREE(rp_node);
 }
-
+// TODO: checkout
 static void delete_fixup(v_br_tree *tree, v_br_node *node)
 {
+  while (node != tree->root && node->color == VT_BLACK) {
+    int is_left_branch = node->parent->left == node
+      ? 0
+      : 1;
+    v_br_node *brother = is_left_branch == 0
+      ? node->parent->right
+      : node->parent->left;
+    if (brother->color == VT_RED) {
+      // cond 1: brother is red, make it to cond 2/3/4
+      brother->color = VT_BLACK;
+      node->parent->color = VT_RED;
+      is_left_branch == 0
+        ? left_rorate(tree, node->parent)
+        : right_rorate(tree, node->parent);
+      brother = node->parent->right;
+    }
+    if (
+        brother->left->color == VT_BLACK
+        && brother->right->color == VT_BLACK
+        ) {
+      // cond 2: brother has two black child
+      brother->color = VT_RED;
+      node = node->parent;
+    } else {
+      if (brother->right->color == VT_BLACK) {
+        // cond 3: brother has black right child
+        // red left child
+        // make it to cond 4
+        brother->left->color = VT_BLACK;
+        brother->color = VT_RED;
+        is_left_branch == 0
+          ? right_rorate(tree, brother)
+          : left_rorate(tree, brother);
+        brother = node->parent->right;
+      }
+      // cond 4: brother left black, right red
+      brother->color = node->parent->color;
+      node->parent->color = VT_BLACK;
+      brother->right->color = VT_BLACK;
+      is_left_branch == 0
+        ? left_rorate(tree, node->parent)
+        : right_rorate(tree, node->parent);
+      node = tree->root;
+    }
+  }
+  node->color = VT_BLACK;
 }
