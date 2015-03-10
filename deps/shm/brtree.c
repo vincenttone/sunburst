@@ -1,16 +1,18 @@
 #include <stdlib.h>
 #include "brtree.h"
 
-v_br_tree* init_tree(v_br_tree *tree, void* (*malloc_node)(size_t size), void (*free_node)(void* node))
+void init_tree(v_br_tree *tree, void* (*malloc_node)(size_t size), void (*free_node)(void* node))
 {
-  //v_br_tree *tree;
-  //tree = V_MALLC(sizeof(v_br_tree));
-  v_br_node *nil_node = NULL;
+  v_br_node *nil_node = malloc_node(sizeof(v_br_node));
+  nil_node->color = VT_BLACK;
+  nil_node->key = 0;
+  nil_node->parent = NULL;
+  nil_node->left = NULL;
+  nil_node->right = NULL;
   tree->root = nil_node;
   tree->NIL = nil_node;
   tree->malloc_node = malloc_node;
   tree->free_node = free_node;
-  return tree;
 }
 
 /**
@@ -349,4 +351,12 @@ void delete_node(v_br_tree *tree, long key)
   }
   // delete the node
   tree->free_node(rp_node);
+}
+
+void inorder(v_br_tree *tree, v_br_node *node, void (*action_func)(v_br_node *))
+{
+  if (node == tree->NIL) return;
+  inorder(tree, node->left, action_func);
+  action_func(node);
+  inorder(tree, node->right, action_func);
 }
