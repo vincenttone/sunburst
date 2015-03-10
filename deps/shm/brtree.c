@@ -1,53 +1,100 @@
+#include <stdlib.h>
 #include "brtree.h"
 
-v_br_tree* init_tree()
+v_br_tree* init_tree(v_br_tree *tree, void* (*malloc_node)(size_t size), void (*free_node)(void* node))
 {
-  v_br_tree *tree;
-  tree = V_MALLC(sizeof(v_br_tree));
+  //v_br_tree *tree;
+  //tree = V_MALLC(sizeof(v_br_tree));
   v_br_node *nil_node = NULL;
   tree->root = nil_node;
   tree->NIL = nil_node;
+  tree->malloc_node = malloc_node;
+  tree->free_node = free_node;
   return tree;
 }
 
-void insert_node(v_br_tree *tree, long key)
+/**
+ * left rorate brtree
+ *
+ *    x               y
+ *   / \             / \
+ *  a   y           x   c
+ *      / \        / \
+ *     b   c      a   b
+ *
+ * @params v_br_tree *tree
+ * @params v_br_node *node
+ **/
+static int left_rorate(v_br_tree *tree, v_br_node *node)
 {
-  v_br_node *node;
-  node = V_MALLC(sizeof(v_br_node));
-  node->color = VT_RED;
-  node->key = key;
-  node->left = tree->NIL;
-  node->right = tree->NIL;
-  node->parent = tree->NIL;
-  // find insert position
-  v_br_node *current_node = tree->root
-    pre_node = tree->NIL;
-  while (current_node != tree->NIL) {
-    pre_node = current_node;
-    if (current_node->key == node->key) {
-      // has this node
-      return;
-    } else if (current_node->key > node->key) {
-      current_node->current_node->right;
-    } else {
-      current_node->current_node->left;
-    }
+  if (node->right == tree->NIL) {
+    // without right child! can not rorate
+    return 1;
   }
-  node->parent = pre_node;
-  if (pre_node == tree->NIL) {
-    // empty tree
-    tree->root = node;
-  } else if (node->key < pre_node->key ) {
-    // is left child
-    pre_node->left = node;
+  // node which chanage to node position
+  v_br_node *replace2_node = node->right;
+  // change right child's left child to node's right child
+  node->right = replace2_node->left;
+  if (node->right != tree->NIL) {
+    node->right->parent = node;
+  }
+  // change new node and it's parent relation
+  replace2_node->parent = node->parent;
+  if (node->parent == tree->NIL) {
+    tree->root = replace2_node;
+  } else if (node->parent->left == node) {
+    node->parent->left = replace2_node;
   } else {
-    // is right child
-    pre_node->right = node;
+    node->parent->right = replace2_node;
   }
-  insert_fixup(tree, node);
+  // change node and new node relation
+  replace2_node->left = node;
+  node->parent = replace2_node;
+
+  return 0;
+}
+/**
+ * right rorate tree
+ *
+ *     x           y
+ *    / \         / \
+ *   y   c       a   x
+ *  / \             / \
+ * a   b           b   c
+ *
+ * @params v_br_tree *tree
+ * @params v_br_node *node
+ **/
+static int right_rorate(v_br_tree *tree, v_br_node *node)
+{
+  if (node->left == tree->NIL) {
+    // without left child! can not rorate
+    return 1;
+  }
+  // the node which chanage to current node position
+  v_br_node *replace2_node = node->left;
+  // change left child's right child to node's left child
+  node->left = replace2_node->right;
+  if (node->left != tree->NIL) {
+    node->left->parent = node;
+  }
+  // change new node and it's parent relation
+  replace2_node->parent = node->parent;
+  if (node->parent == tree->NIL) {
+    tree->root = replace2_node;
+  } else if (node->parent->left == node) {
+    node->parent->left = replace2_node;
+  } else {
+    node->parent->right = replace2_node;
+  }
+  // change node and new node relation
+  replace2_node->right = node;
+  node->parent = replace2_node;
+
+  return 0;
 }
 
-static void function insert_fixup(v_br_tree *tree, v_br_node *node)
+static void insert_fixup(v_br_tree *tree, v_br_node *node)
 {
   // only fixup when parent is red
   while (node->parent->color == VT_RED) {
@@ -91,87 +138,44 @@ static void function insert_fixup(v_br_tree *tree, v_br_node *node)
       }
     }
   }
-  tree->root = VT_BLACK;
+  tree->root->color = VT_BLACK;
 }
-/**
- * left rorate brtree
- *
- *    x               y
- *   / \             / \
- *  a   y           x   c
- *      / \        / \
- *     b   c      a   b
- *
- * @params v_br_tree *tree
- * @params v_br_node *node
- **/
-static int left_rorate(v_br_tree *tree, v_br_node *node)
-{
-  if (node->right == tree->NIL) {
-    // without right child! can not rorate
-    return 1;
-  }
-  // node which chanage to node position
-  v_br_node *replace2_node = node->right;
-  // change right child's left child to node's right child
-  node->right = replace2_node->left;
-  if (node->right != tree->NIL) {
-    node->right->parent = node;
-  }
-  // change new node and it's parent relation
-  replace2_node->parent = node->parent;
-  if (node->parent == tree->NIL) {
-    tree->root = replace2_node;
-  } else if (node->parent->left = node) {
-    node->parent->left = replace2_node;
-  } else {
-    node->parent->right = replace2_node;
-  }
-  // change node and new node relation
-  replace2_node->left = node;
-  node->parent = replace2_node;
 
-  return 0;
-}
-/**
- * right rorate tree
- *
- *     x           y
- *    / \         / \
- *   y   c       a   x
- *  / \             / \
- * a   b           b   c
- *
- * @params v_br_tree *tree
- * @params v_br_node *node
- **/
-static int right_rorate(v_br_tree *tree, v_br_node *node)
+void insert_node(v_br_tree *tree, long key)
 {
-  if (node->left == tree->NIL) {
-    // without left child! can not rorate
-    return 1;
+  v_br_node *node;
+  node = tree->malloc_node(sizeof(v_br_node));
+  node->color = VT_RED;
+  node->key = key;
+  node->left = tree->NIL;
+  node->right = tree->NIL;
+  node->parent = tree->NIL;
+  // find insert position
+  v_br_node *current_node = tree->root,
+    *pre_node = tree->NIL;
+  while (current_node != tree->NIL) {
+    pre_node = current_node;
+    if (current_node->key == node->key) {
+      // has this node
+      return;
+    } else if (current_node->key > node->key) {
+      current_node = current_node->right;
+    } else {
+      current_node = current_node->left;
+    }
   }
-  // the node which chanage to current node position
-  v_br_node *replace2_node = node->left;
-  // change left child's right child to node's left child
-  node->left = replace2_node->right;
-  if (node->left != tree->NIL) {
-    node->left->parent = node;
-  }
-  // change new node and it's parent relation
-  replace2_node->parent = node->parent;
-  if (node->parent == tree->NIL) {
-    tree->root = replace2_node;
-  } else if (node->parent->left = node) {
-    node->parent->left = replace2_node;
+  node->parent = pre_node;
+  if (pre_node == tree->NIL) {
+    // empty tree
+    tree->root = node;
+  } else if (node->key < pre_node->key ) {
+    // is left child
+    pre_node->left = node;
   } else {
-    node->parent->right = replace2_node;
+    // is right child
+    pre_node->right = node;
   }
-  // change node and new node relation
-  replace2_node->right = node;
-  node->parent = replace2_node;
-
-  return 0;
+  insert_fixup(tree, node);
 }
 
 /**
@@ -237,8 +241,8 @@ v_br_node* search_successor(v_br_tree *tree, v_br_node *node)
   }
   // has right branch
   // find the min node in right branch
-  if (x->right != tree->NIL) {
-    return search_min(tree, x->right);
+  if (node->right != tree->NIL) {
+    return search_min(tree, node->right);
   }
   // right branch not exists
   // cond 1: node is left child, successor is parent;
@@ -246,54 +250,11 @@ v_br_node* search_successor(v_br_tree *tree, v_br_node *node)
   v_br_node *s_node = node->parent;
   while (s_node != tree->NIL && node == s_node->right) {
     node = s_node;
-    s_node->node->parent;
+    s_node = node->parent;
   }
-  return y;
+  return node;
 }
-/**
- * delete node match the key int tree
- */
-void delete_node(v_br_tree *tree, long key)
-{
-  v_br_node *del_node = search_node(tree, key);
-  if (del_node == tree->NIL) return;
-  // find the real position to del
-  // cond 1: only one child branch, del the node
-  // cond 2: two child branch, find the successor
-  v_br_node *rp_node = 
-    (del_node->left == tree->NIL
-     || del_node->right == tree->NIL)
-    ? del_node
-    : search_successor(tree, del_node);
-  v_br_node *rp_child_node = 
-    rp_node->left == tree->NIL
-    ? rp_node->right
-    : rp_node->left;
-  // adjust relations
-  if (rp_child_node != tree->NIL) {
-    rp_child_node->parent = rp_node->parent;
-  }
-  if (rp_node->parent == tree->NIL) {
-    // rp_node is root
-    tree->root = rp_child_node;
-  } else if (rp_node->parent->left == rp_node) {
-    // rp_node is left child
-    rp_node->parent->left = rp_child_node;
-  } else {
-    // rp_node is right child
-    rp_node->parent->right = rp_child_node;
-  }
-  // fix the key
-  if (del_node != rp_node) {
-    del_node->key = rp_node->key;
-  }
-  // if deleted node is black, need to fixup
-  if (rp_node->color == VT_BLACK) {
-    delete_fixup(tree, del_node);
-  }
-  // delete the node
-  V_FREE(rp_node);
-}
+
 // TODO: checkout
 static void delete_fixup(v_br_tree *tree, v_br_node *node)
 {
@@ -343,4 +304,49 @@ static void delete_fixup(v_br_tree *tree, v_br_node *node)
     }
   }
   node->color = VT_BLACK;
+}
+
+/**
+ * delete node match the key int tree
+ */
+void delete_node(v_br_tree *tree, long key)
+{
+  v_br_node *del_node = search_node(tree, key);
+  if (del_node == tree->NIL) return;
+  // find the real position to del
+  // cond 1: only one child branch, del the node
+  // cond 2: two child branch, find the successor
+  v_br_node *rp_node = 
+    (del_node->left == tree->NIL
+     || del_node->right == tree->NIL)
+    ? del_node
+    : search_successor(tree, del_node);
+  v_br_node *rp_child_node = 
+    rp_node->left == tree->NIL
+    ? rp_node->right
+    : rp_node->left;
+  // adjust relations
+  if (rp_child_node != tree->NIL) {
+    rp_child_node->parent = rp_node->parent;
+  }
+  if (rp_node->parent == tree->NIL) {
+    // rp_node is root
+    tree->root = rp_child_node;
+  } else if (rp_node->parent->left == rp_node) {
+    // rp_node is left child
+    rp_node->parent->left = rp_child_node;
+  } else {
+    // rp_node is right child
+    rp_node->parent->right = rp_child_node;
+  }
+  // fix the key
+  if (del_node != rp_node) {
+    del_node->key = rp_node->key;
+  }
+  // if deleted node is black, need to fixup
+  if (rp_node->color == VT_BLACK) {
+    delete_fixup(tree, del_node);
+  }
+  // delete the node
+  tree->free_node(rp_node);
 }

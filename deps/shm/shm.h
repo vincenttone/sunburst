@@ -1,4 +1,4 @@
-#ifndif __V_SHM_H
+#ifndef __V_SHM_H
 #define __V_SHM_H 1
 
 typedef struct {
