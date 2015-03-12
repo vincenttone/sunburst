@@ -15,13 +15,18 @@ int main()
   insert_node(tree, 10);
   insert_node(tree, 50);
   insert_node(tree, 40);
-printf("max val is %ld\n", search_max(tree, tree->root)->key);
   insert_node(tree, 80);
   insert_node(tree, 100);
+  insert_node(tree, 500);
+  insert_node(tree, 60);
+  insert_node(tree, 300);
   printf("root val is %ld\n", tree->root->key);
   node = search_min(tree, tree->root);
   printf("min val is %ld\n", node->key);
   printf("max val is %ld\n", search_max(tree, tree->root)->key);
+  inorder(tree, tree->root, print_key);
+  insert_node(tree, 60);
+  printf("after del, root is: %ld\n", tree->root->key);
   inorder(tree, tree->root, print_key);
   free(tree);
 }
