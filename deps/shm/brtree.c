@@ -160,10 +160,10 @@ void insert_node(v_br_tree *tree, long key)
     if (current_node->key == node->key) {
       // has this node
       return;
-    } else if (current_node->key > node->key) {
-      current_node = current_node->right;
-    } else {
+    } else if (node->key < current_node->key) {
       current_node = current_node->left;
+    } else {
+      current_node = current_node->right;
     }
   }
   node->parent = pre_node;
