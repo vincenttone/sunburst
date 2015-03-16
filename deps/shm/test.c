@@ -25,7 +25,8 @@ int main()
   printf("min val is %ld\n", node->key);
   printf("max val is %ld\n", search_max(tree, tree->root)->key);
   inorder(tree, tree->root, print_key);
-  insert_node(tree, 60);
+  delete_node(tree, 60);
+  delete_node(tree, 50);
   printf("after del, root is: %ld\n", tree->root->key);
   inorder(tree, tree->root, print_key);
   free(tree);

@@ -24,6 +24,7 @@ void init_tree(                                   \
                void* (*malloc_node)(size_t size), \
                void (*free_node)(void* node));
 void insert_node(v_br_tree *tree, long key);
+void delete_node(v_br_tree *tree, long key);
 v_br_node* search_node(v_br_tree *tree, long key);
 v_br_node* search_min(v_br_tree *tree, v_br_node *node);
 v_br_node* search_max(v_br_tree *tree, v_br_node *node);
