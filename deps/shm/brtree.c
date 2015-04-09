@@ -328,9 +328,9 @@ void delete_node(v_br_tree *tree, long key)
     ? rp_node->right
     : rp_node->left;
   // adjust relations
-  if (rp_child_node != tree->NIL) {
-    rp_child_node->parent = rp_node->parent;
-  }
+  //if (rp_child_node != tree->NIL) {
+  rp_child_node->parent = rp_node->parent;
+    //}
   if (rp_node->parent == tree->NIL) {
     // rp_node is root
     tree->root = rp_child_node;
@@ -347,7 +347,7 @@ void delete_node(v_br_tree *tree, long key)
   }
   // if deleted node is black, need to fixup
   if (rp_node->color == VT_BLACK) {
-    delete_fixup(tree, del_node);
+    delete_fixup(tree, rp_child_node);
   }
   // delete the node
   tree->free_node(rp_node);
