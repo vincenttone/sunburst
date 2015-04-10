@@ -284,7 +284,7 @@ static void delete_fixup(v_br_tree *tree, v_br_node *node)
       ? node->parent->right
       : node->parent->left;
     if (brother->color == VCT_RED) {
-      // when brother is red, convert to other conds
+      // when brother is red, convert to black-brother
       brother->color = VCT_BLACK;
       node->parent->color = VCT_RED;
       if (is_left_branch == VBT_YES) {
@@ -295,19 +295,20 @@ static void delete_fixup(v_br_tree *tree, v_br_node *node)
         brother = node->parent->left;
       }
     }
+    // when black-brother
     if (
         brother->left->color == VCT_BLACK
         && brother->right->color == VCT_BLACK
         ) {
-      // when brother has two black child
+      // when brother has double-black-children
+      // convert to delete_fixup parent node
       brother->color = VCT_RED;
       node = node->parent;
     } else {
       if (is_left_branch == VBT_YES) {
         if (brother->right->color == VCT_BLACK) {
-          // when brother has black right child
-          // red left child
-          // convert it to lasst cond
+          // when brother has black-right-red-left-children
+          // convert to brother has right-red-child
           brother->left->color = VCT_BLACK;
           brother->color = VCT_RED;
           right_rorate(tree, brother);
@@ -321,7 +322,7 @@ static void delete_fixup(v_br_tree *tree, v_br_node *node)
           brother = node->parent->left;
         }
       }
-      // last cond: when brother left black, right red
+      // when brother has right-red-child (in left branch)
       brother->color = node->parent->color;
       node->parent->color = VCT_BLACK;
       if (is_left_branch == VBT_YES) {
@@ -334,6 +335,7 @@ static void delete_fixup(v_br_tree *tree, v_br_node *node)
       node = tree->root;
     }
   }
+  // red-black node to black
   node->color = VCT_BLACK;
 }
 
