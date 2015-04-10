@@ -257,7 +257,12 @@ v_br_node* search_successor(v_br_tree *tree, v_br_node *node)
   return node;
 }
 
-// TODO: checkout
+/**
+ * fixup colors and struct after delete
+ * @param v_br_tree
+ * @param v_br_node
+ * @return void
+ */
 static void delete_fixup(v_br_tree *tree, v_br_node *node)
 {
   while (node != tree->root && node->color == VT_BLACK) {
@@ -353,10 +358,18 @@ void delete_node(v_br_tree *tree, long key)
   tree->free_node(rp_node);
 }
 
-void inorder(v_br_tree *tree, v_br_node *node, void (*action_func)(v_br_node *))
+void inorder(v_br_tree *tree, v_br_node *node, void (*action_func)(v_br_tree *, v_br_node *))
 {
   if (node == tree->NIL) return;
   inorder(tree, node->left, action_func);
-  action_func(node);
+  action_func(tree, node);
   inorder(tree, node->right, action_func);
+}
+
+void preorder(v_br_tree *tree, v_br_node *node, void (*action_func)(v_br_tree *, v_br_node *))
+{
+  if (node == tree->NIL) return;
+  action_func(tree, node);
+  preorder(tree, node->left, action_func);
+  preorder(tree, node->right, action_func);
 }
