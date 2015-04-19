@@ -26,7 +26,7 @@ int main()
   init_tree(tree, malloc, free);
   int counts[CLEN];
   for (int i = 1; i <= CLEN; i++) {
-    insert_node(tree, i);
+    insert_node(tree, i, NULL);
   }
   printf("root val is %ld\n", tree->root->key);
   node = search_min(tree, tree->root);

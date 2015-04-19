@@ -9,6 +9,7 @@ void init_tree(v_br_tree *tree, void* (*malloc_node)(size_t size), void (*free_n
   nil_node->parent = NULL;
   nil_node->left = NULL;
   nil_node->right = NULL;
+  nil_node->val = NULL;
   tree->root = nil_node;
   tree->NIL = nil_node;
   tree->malloc_node = malloc_node;
@@ -154,12 +155,13 @@ static void insert_fixup(v_br_tree *tree, v_br_node *node)
   tree->root->color = VCT_BLACK;
 }
 
-void insert_node(v_br_tree *tree, long key)
+void insert_node(v_br_tree *tree, long key, void* val)
 {
   v_br_node *node;
   node = tree->malloc_node(sizeof(v_br_node));
   node->color = VCT_RED;
   node->key = key;
+  node->val = val;
   node->left = tree->NIL;
   node->right = tree->NIL;
   node->parent = tree->NIL;
@@ -375,6 +377,7 @@ void delete_node(v_br_tree *tree, long key)
   // fix the key
   if (del_node != rp_node) {
     del_node->key = rp_node->key;
+    del_node->val = rp_node->val;
   }
   // if deleted node is black, need to fixup
   if (rp_node->color == VCT_BLACK) {
